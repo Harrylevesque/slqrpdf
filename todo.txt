@@ -1,0 +1,81 @@
+TODO
+
+📌 1. Core Components
+- [ ] Set up main server (main.go) with HTTP router (chi, gorilla/mux, or net/http)
+- [ ] Implement config loader (YAML/JSON for secrets, DB creds)
+- [ ] Establish database connection (MySQL via gorm or database/sql)
+- [ ] Create crypto utilities (ecdsa, rsa, ed25519, sha256)
+- [ ] Integrate QR/barcode libraries (boombuler/barcode for QR, pdf417 lib)
+- [ ] Add TOTP/seed generator (pquerna/otp)
+- [ ] Implement JWT/session tokens (golang-jwt/jwt)
+- [ ] Set up background workers (goroutines + timers for rotation)
+- [ ] Add logging (zap or logrus)
+
+📌 2. Database Tables
+- [ ] users: id, public_key, biometric_id, created_at
+- [ ] sessions: id, user_id, active_key_set, expires_at
+- [ ] qr_codes: id, session_id, outer_qr_payload, pdf417_payload, created_at, expires_at
+- [ ] keys: id, session_id, seed_type, key_material, rotates_at
+- [ ] certificates: id, creator_id, public_key, signature_algorithm
+- [ ] audit_logs: id, action, user_id, timestamp
+
+📌 3. Endpoints (REST API)
+🔑 Auth & Identity
+- [ ] POST /register – register new user w/ passkey
+- [ ] POST /login – authenticate via passkey
+- [ ] GET /me – get current user
+
+📄 QR Management
+- [ ] POST /qr/create – generate QR (outer QR + PDF417 + inner matrices)
+- [ ] GET /qr/:id – retrieve QR metadata
+- [ ] POST /qr/validate – check scanned payload validity
+
+🔄 Key Rotation
+- [ ] POST /key/rotate – force refresh session keys
+- [ ] GET /key/status/:id – current rotation state
+
+🔏 Certificates
+- [ ] POST /cert/register – register creator certificate
+- [ ] POST /cert/sign – sign QR payload
+- [ ] GET /cert/verify/:id – verify QR signature
+
+🛠 Admin / Debug
+- [ ] GET /health – service check
+- [ ] GET /stats – system stats
+- [ ] DELETE /session/:id – invalidate session
+
+📌 4. Key & Seed System
+- [ ] Implement Long Seed (per user, encrypted)
+- [ ] Implement Short Seed (per session, fast-rotating)
+- [ ] Implement MashSeed (derived from Long + Short, HKDF/PBKDF2)
+- [ ] Implement TOTP Seed (time-based rolling codes)
+- [ ] Implement Secret D / Secret K (session keys for QR encoding)
+- [ ] Implement Certificate Key (creator’s signing key)
+
+📌 5. Go Packages (by folder)
+/cmd/server/main.go
+/internal/
+   - [ ] auth/ – login, passkeys, sessions
+   - [ ] qr/ – QR + PDF417 + DataMatrix generators
+   - [ ] crypto/ – keygen, TOTP, seeds, hashing
+   - [ ] certs/ – certificate handling, signatures
+   - [ ] storage/ – MySQL models + migrations
+   - [ ] api/ – HTTP handlers, routing
+   - [ ] jobs/ – key rotation workers
+   - [ ] utils/ – logging, config, helpers
+
+📌 6. Rotation Pipeline
+- [ ] Issue session + seeds on login
+- [ ] Generate outer QR with rotating PDF417
+- [ ] PDF417 contains inner DataMatrix payloads (3 mini-IDs rotating every 3.333s, offset)
+- [ ] Use seeds to drive rotations (TOTP, MashSeed, etc.)
+- [ ] Validate scanned payloads via /qr/validate
+- [ ] Optionally verify certificate signature
+
+📌 7. Developer Tools
+- [ ] Dockerfile for deployment
+- [ ] Makefile for builds/test
+- [ ] Swagger/OpenAPI docs for API
+- [ ] Unit tests (Go testing pkg)
+- [ ] CI/CD (GitHub Actions)
+
