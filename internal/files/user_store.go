@@ -1,18 +1,18 @@
 package files
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
-	"github.com/harry/slqrpdf/internal/crypto"
-	"github.com/harry/slqrpdf/internal/models"
+	"github.com/harrylevesque/slqrpdf/internal/crypto"
+	"github.com/harrylevesque/slqrpdf/internal/models"
 )
 
-// readMasterKey reads MASTER_KEY_HEX env var (hex, 64 chars -> 32 bytes)
-func readMasterKey() ([]byte, error) {
+// ReadMasterKey reads MASTER_KEY_HEX env var (hex, 64 chars -> 32 bytes)
+func ReadMasterKey() ([]byte, error) {
 	hexk := os.Getenv("MASTER_KEY_HEX")
 	if hexk == "" {
 		return nil, fmt.Errorf("MASTER_KEY_HEX not set")
@@ -27,8 +27,8 @@ func readMasterKey() ([]byte, error) {
 	return b, nil
 }
 
-// writeEncryptedUserFile writes a user struct to an encrypted file
-func writeEncryptedUserFile(outDir string, user *models.User, masterKey []byte) (string, error) {
+// WriteEncryptedUserFile writes a user struct to an encrypted file
+func WriteEncryptedUserFile(outDir string, user *models.User, masterKey []byte) (string, error) {
 	plain, err := json.MarshalIndent(user, "", "  ")
 	if err != nil {
 		return "", err
@@ -41,15 +41,15 @@ func writeEncryptedUserFile(outDir string, user *models.User, masterKey []byte) 
 		return "", err
 	}
 	filename := filepath.Join(outDir, user.UserID+".json.enc")
-	if err := ioutil.WriteFile(filename, enc, 0600); err != nil {
+	if err := os.WriteFile(filename, enc, 0600); err != nil {
 		return "", err
 	}
 	return filename, nil
 }
 
-// readEncryptedUserFile reads and decrypts a user file
-func readEncryptedUserFile(path string, masterKey []byte) (*models.User, error) {
-	blob, err := ioutil.ReadFile(path)
+// ReadEncryptedUserFile reads and decrypts a user file
+func ReadEncryptedUserFile(path string, masterKey []byte) (*models.User, error) {
+	blob, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}

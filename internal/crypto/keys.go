@@ -2,6 +2,7 @@ package crypto
 
 import (
 	"crypto/hmac"
+	"crypto/rand"
 
 	"crypto/sha256"
 	"encoding/base32"

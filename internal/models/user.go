@@ -28,8 +28,8 @@ type Session struct {
 }
 
 type Metadata struct {
-	CreatedAt         time.Time `json:"created_at"`
-	LastLogin         time.Time `json:"last_login"`
-	DeviceFingerprint string    `json:"device_fingerprint"`
-	IPHistory         []string  `json:"ip_history"`
+	CreatedAt          time.Time `json:"created_at"`
+	LastLogin          time.Time `json:"last_login"`
+	DeviceFingerprints []string  `json:"device_fingerprints"`
+	IPHistory          []string  `json:"ip_history"`
 }

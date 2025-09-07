@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create New User</title>
+</head>
+<body>
+    <h1>Create New User</h1>
+    <button id="createUserBtn" style="font-size:2em;padding:1em 2em;">Create New User</button>
+    <form id="createUserForm" style="display:none; margin-top:2em;">
+        <input type="hidden" id="user_id" name="user_id">
+        <input type="hidden" id="device_fingerprint" name="device_fingerprint">
+    </form>
+    <div id="result" style="margin-top:2em;"></div>
+    <script>
+        // Generate UUID (u--uuid)
+        function generateUserId() {
+            if (window.crypto && window.crypto.randomUUID) {
+                return 'u--' + window.crypto.randomUUID();
+            }
+            // Fallback for older browsers
+            function uuidv4() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
+            return 'u--' + uuidv4();
+        }
+
+        // Simple browser fingerprint (userAgent + screen + platform)
+        function getBrowserFingerprint() {
+            const data = [
+                navigator.userAgent,
+                navigator.language,
+                navigator.platform,
+                screen.width,
+                screen.height,
+                screen.colorDepth
+            ].join('::');
+            // Simple hash (FNV-1a)
+            let hash = 2166136261;
+            for (let i = 0; i < data.length; i++) {
+                hash ^= data.charCodeAt(i);
+                hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+            }
+            return Math.abs(hash).toString(16);
+        }
+
+        // On page load, try to get device fingerprint from backend, else use browser fingerprint
+        const userId = generateUserId();
+        let deviceFingerprint = getBrowserFingerprint();
+        fetch('/deviceid')
+            .then(res => res.json())
+            .then(data => {
+                if (data.device_fingerprints && data.device_fingerprints.length > 0) {
+                    deviceFingerprint = data.device_fingerprints[0];
+                }
+                document.getElementById('user_id').value = userId;
+                document.getElementById('device_fingerprint').value = deviceFingerprint;
+            })
+            .catch(() => {
+                document.getElementById('user_id').value = userId;
+                document.getElementById('device_fingerprint').value = deviceFingerprint;
+            });
+
+        document.getElementById('createUserBtn').addEventListener('click', async function() {
+            document.getElementById('createUserBtn').disabled = true;
+            document.getElementById('result').textContent = 'Creating user...';
+            const payload = {
+                user_id: userId,
+                device_fingerprints: [document.getElementById('device_fingerprint').value]
+            };
+            try {
+                const res = await fetch('/users/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const text = await res.text();
+                document.getElementById('result').textContent = text;
+            } catch (err) {
+                document.getElementById('result').textContent = 'Error: ' + err;
+            }
+            document.getElementById('createUserBtn').disabled = false;
+        });
+    </script>
+</body>
+</html>
