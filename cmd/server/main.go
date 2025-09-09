@@ -1,13 +1,14 @@
 package main
 
 import (
-	"github.com/harrylevesque/slqrpdf/internal/api"
 	"log"
 	"net/http"
+
+	"github.com/harrylevesque/slqrpdf/internal/api"
 )
 
 func main() {
-	r := api.NewRouter()
-	log.Println("Server running on :8080")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	router := api.NewRouter()
+	log.Println("Server running on https://localhost:8443")
+	log.Fatal(http.ListenAndServeTLS(":8443", "localhost.pem", "localhost-key.pem", router))
 }

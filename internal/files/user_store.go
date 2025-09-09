@@ -63,3 +63,37 @@ func ReadEncryptedUserFile(path string, masterKey []byte) (*models.User, error) 
 	}
 	return &u, nil
 }
+
+// WriteUserFile writes a user struct to a plain JSON file
+func WriteUserFile(outDir string, user *models.User) (string, error) {
+	plain, err := json.MarshalIndent(user, "", "  ")
+	if err != nil {
+		return "", err
+	}
+	if err := os.MkdirAll(outDir, 0700); err != nil {
+		return "", err
+	}
+	filename := filepath.Join(outDir, user.UserID+".json")
+	if err := os.WriteFile(filename, plain, 0600); err != nil {
+		return "", err
+	}
+	return filename, nil
+}
+
+// ReadUserFile reads a plain JSON user file and returns a User struct
+func ReadUserFile(path string) (*models.User, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	var user models.User
+	err = json.NewDecoder(f).Decode(&user)
+	closeErr := f.Close()
+	if err != nil {
+		return nil, err
+	}
+	if closeErr != nil {
+		return nil, closeErr
+	}
+	return &user, nil
+}
