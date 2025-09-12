@@ -1,3 +1,0 @@
-package qr
-
-// ...existing code...

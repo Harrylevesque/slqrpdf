@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>slqrpdf Passkey GUI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>slqrpdf Passkey Demo</h1>
+    <div id="status"></div>
+    <form id="createForm">
+      <button type="submit">Create Account & Generate Passkey</button>
+    </form>
+    <div id="passkeySection" style="display:none;">
+      <h2>Passkey</h2>
+      <pre id="passkeyDisplay"></pre>
+      <button id="copyPasskey">Copy Passkey</button>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
+
