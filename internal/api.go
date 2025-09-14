@@ -396,26 +396,63 @@ func NewRouter() *mux.Router {
 	r := mux.NewRouter()
 	indexPath := filepath.Join(GetProjectRoot(), "internal", "mobile", "static", "index.html")
 	r.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) { w.Write([]byte("OK")) }).Methods("GET")
-	// TODO(flow-2-route): Split user retrieval from login semantics; consider /users/{id} pure read.
+
+	// Time and device info
 	r.HandleFunc("/time", GetTimeHandler).Methods("GET")
+	r.HandleFunc("/deviceid", GetDeviceIDHandler).Methods("GET")
+
+	// User management
+	// TODO(flow-2-route): Split user retrieval from login semantics; consider /users/{id} pure read.
 	r.HandleFunc("/users/login/{id}", GetUserHandler).Methods("GET")
 	r.HandleFunc("/users/create", CreateUserHandler).Methods("POST")
 	// TODO(flow-1-route-enroll): Replace /users/create with /enroll (backward compat alias) once device model added.
+
+	// Passkey and WebAuthn
 	r.HandleFunc("/users/passkey/setup", SetupPasskeyHandler).Methods("POST")
-	// TODO(flow-2-new): Add /auth/challenge, /auth/verify routes.
-	// TODO(flow-3-new): Add /session/logout route.
-	// TODO(flow-4-new): Add /device/add-request & /device/approve-add routes.
-	// TODO(flow-5-new): Add /device/revoke route.
-	// TODO(flow-6-new): Add /account/delete route.
-	// TODO(flow-7-new): Add /recover route.
-	// TODO(flow-8-new): Add /heartbeat route.
-	// TODO(flow-9-new): Add /kill route (admin protected).
-	// TODO(flow-10-new): Add /oauth/authorize & /oauth/token routes.
-	// TODO(flow-11-new): Add /session/refresh route.
-	// TODO(flow-10-introspect-route): Add /introspect route (internal only).
-	r.HandleFunc("/deviceid", GetDeviceIDHandler).Methods("GET")
 	r.HandleFunc("/webauthn/register/options", WebAuthnRegisterOptionsHandler).Methods("POST")
 	r.HandleFunc("/webauthn/register/verify", WebAuthnRegisterVerifyHandler).Methods("POST")
+
+	// Auth flows
+	// TODO(flow-2-new): Add /auth/challenge, /auth/verify routes.
+	r.HandleFunc("/auth/challenge" /*//TODO replace later */).Methods("GET")
+	r.HandleFunc("/auth/verify" /*//TODO replace later */).Methods("GET")
+
+	// Session management
+	// TODO(flow-3-new): Add /session/logout route.
+	r.HandleFunc("/session/logout/" /*//TODO replace later */).Methods("GET")
+	// TODO(flow-11-new): Add /session/refresh route.
+	r.HandleFunc("/session/refresh" /*//TODO replace later */).Methods("GET")
+
+	// Device management
+	// TODO(flow-4-new): Add /device/add-request & /device/approve-add routes.
+	r.HandleFunc("/device/add/request" /*//TODO replace later */).Methods("GET")
+	r.HandleFunc("/device/add/approve" /*//TODO replace later */).Methods("GET")
+	// TODO(flow-5-new): Add /device/revoke route.
+	r.HandleFunc("/device/revoke" /*//TODO replace later */).Methods("GET")
+
+	// Account management
+	// TODO(flow-6-new): Add /account/delete route.
+	r.HandleFunc("/account/delete" /*//TODO replace later */).Methods("GET")
+	// TODO(flow-7-new): Add /recover route.
+	r.HandleFunc("/account/recover" /*//TODO replace later */).Methods("GET")
+
+	// Heartbeat
+	// TODO(flow-8-new): Add /heartbeat route.
+	r.HandleFunc("/heartbeat" /*//TODO replace later */).Methods("GET")
+
+	// Admin/privileged
+	// TODO(flow-9-new): Add /kill route (admin protected).
+	r.HandleFunc("/kill" /*//TODO replace later */).Methods("GET")
+
+	// OAuth/OIDC
+	// TODO(flow-10-new): Add /oauth/authorize & /oauth/token routes.
+	r.HandleFunc("/auth/authorize" /*//TODO replace later */).Methods("GET")
+	r.HandleFunc("/auth/token" /*//TODO replace later */).Methods("GET")
+
+	// Introspection
+	// TODO(flow-10-introspect-route): Add /introspect route (internal only).
+	r.HandleFunc("/introspect" /*//TODO replace later */).Methods("GET")
+
 	// index
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) { http.ServeFile(w, r, indexPath) }).Methods("GET")
 	r.HandleFunc("/index.html", func(w http.ResponseWriter, r *http.Request) { http.ServeFile(w, r, indexPath) }).Methods("GET")
